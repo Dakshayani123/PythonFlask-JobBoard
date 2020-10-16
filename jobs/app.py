@@ -3,7 +3,6 @@ from flask import Flask, render_template, g
 
 PATH ='db/jobs.sqlite'
 
-
 app = Flask(__name__)
 
 def open_connection():
@@ -14,7 +13,7 @@ def open_connection():
   return connection
 
 def execute_sql(sql, values=(), commit=False, single=False):
-  connection = open connection()
+  connection = open_connection()
   cursor = connection.execute(sql, values)
   if commit ==True:
     results = connection.commit()
@@ -24,12 +23,11 @@ def execute_sql(sql, values=(), commit=False, single=False):
       cursor.close()
       return results
 
-  @app.teardown_appcontext
-  def close_connection(exception)
-    connection = getattr(g, '_connection', None)
-    if connection is not None:
-      connection.close()
-
+@app.teardown_appcontext
+def close_connection(exception)
+  connection = getattr(g, '_connection', None)
+  if connection is not None:
+    connection.close()
 
 @app.route('/')
 @app.route('/jobs')
